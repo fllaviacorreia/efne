@@ -48,3 +48,14 @@ export type GenderType = {
     value: string,
     label: string,
 }
+
+export type PaymentType = {
+    type: "doação" | "rifa" | "outro",
+    value: number,
+    description: string,
+}
+export type OutType = {
+    removed_by: string,
+    value: number,
+    description: string,
+}
