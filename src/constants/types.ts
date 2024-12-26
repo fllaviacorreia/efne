@@ -59,3 +59,19 @@ export type OutType = {
     value: number,
     description: string,
 }
+
+export type TrainingDayType = {
+    value: "Segunda" | "Terça" | "Quarta" | "Quinta" | "Sexta" | "Sábado" | "Domingo",
+}
+
+export type TrainingScheduleType = {
+    day: string,
+    hour: string,
+}
+
+export type CategoriesType = {
+    name: string,
+    status: "ativo" | "inativo",
+    trainingDays: TrainingDayType[],
+    trainingSchedule: TrainingScheduleType[],
+}
