@@ -1,21 +1,17 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "../screens/auth/LoginScreen";
-import RegisterScreen from "../screens/auth/RegisterScreen";
+import { useAuth } from "@/context/AuthContext";
+import AuthNavigation from "./AuthNavigation";
+import { Tabs } from "./BottomNavigation";
 
 export type RoutesParamList = {
     Login: undefined;
     Register: undefined;
+    ForgotPassword: undefined;
     Home: undefined;
     Details: undefined;
 }
 
-const Stack = createNativeStackNavigator<RoutesParamList>();
-
 export default function AppNavigation() {
-  return (
-    <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-    </Stack.Navigator>
-  );
+  const { isAuthenticated } = useAuth();
+
+ return isAuthenticated ? <Tabs /> : <AuthNavigation />
 }
