@@ -1,21 +1,26 @@
+import { light as lightTheme, dark as darkTheme } from '@eva-design/eva';
+
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+export const customLightTheme = {
+  ...lightTheme,
+  'color-primary-500': tintColorLight,
+  'color-primary-100': '#0b14ca', // Adicione tonalidades secundárias, se necessário
+  'color-background': '#fff',
+  'color-text': '#11181C',
+  'color-icon': '#687076',
+  'color-tab-icon-default': '#687076',
+  'color-tab-icon-selected': tintColorLight,
+};
+
+export const customDarkTheme = {
+  ...darkTheme,
+  'color-primary-500': tintColorDark,
+  'color-primary-100': '#444', // Adicione tonalidades secundárias, se necessário
+  'color-background': '#151718',
+  'color-text': '#ECEDEE',
+  'color-icon': '#9BA1A6',
+  'color-tab-icon-default': '#9BA1A6',
+  'color-tab-icon-selected': tintColorDark,
 };
