@@ -1,42 +1,8 @@
+import { AuthContextType, loginType, registerType, userType } from '@/constants/types';
 import { loginFirebase, registerFirebase } from '@/firebase/authentication';
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useContext, useEffect, useState } from "react";
 import { Alert } from "react-native"
-
-type userType = {
-    username: string,
-    name: string,
-}
-
-type loginType = {
-    username: string,
-    password: string,
-    keepConnected: boolean,
-}
-
-type registerType = {
-    name: string,
-    born: string,
-    gender: string,
-    slug: string,
-    username: string,
-    password: string,
-}
-
-type AuthContextType = {
-    isAuthenticated: boolean,
-    isFirstAccess: boolean,
-    keepConnected: boolean,
-
-    user: userType,
-
-    login: ({ }: loginType) => Promise<void>,
-    register: ({ }: registerType) => Promise<void>,
-    forgotPassword: (username: string) => Promise<void>,
-    resetPassword: (username: string, password: string, passwordConfirm: string) => Promise<void>,
-    logout: () => Promise<void>,
-    editProfile: () => Promise<void>,
-}
 
 const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
@@ -109,7 +75,7 @@ function AuthProvider({ children }: any) {
     const register = async ({ name, born, gender, slug, username, password }: registerType) => {
         try {
             const user = await registerFirebase(username, password);
-            
+
             if (user) {
                 setIsFirstAccess(false);
 
