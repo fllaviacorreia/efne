@@ -14,12 +14,4 @@ const firebaseConfig = {
 // Inicialize o Firebase
 const app = initializeApp(firebaseConfig);
 
-// Opcional: Adicione o analytics se necessário
-// (Certifique-se de estar em um ambiente onde o Analytics seja suportado)
-let analytics;
-if (firebaseConfig.measurementId) {
-  const { getAnalytics } = require("firebase/analytics");
-  analytics = getAnalytics(app);
-}
-
-export { app, analytics };
+export { app };
