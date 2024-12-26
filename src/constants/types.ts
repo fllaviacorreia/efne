@@ -1,7 +1,12 @@
 
 export type userType = {
-    username: string,
     name: string,
+    gender: "feminino" | "masculino" | "outro",
+    username: string,
+    born: Date,
+    status: "ativo" | "inativo",
+    slug: "master" | "administrador" | "treinador" | "responsavel",
+    loginId: string
 }
 
 export type loginType = {
