@@ -75,3 +75,14 @@ export type CategoriesType = {
     trainingDays: TrainingDayType[],
     trainingSchedule: TrainingScheduleType[],
 }
+
+export type Months = {
+    value: "Janeiro" | "Fevereiro" | "Março" | "Abril" | "Maio" | "Junho" | "Julho" | "Agosto" | "Setembro" | "Outubro" | "Novembro" | "Dezembro",
+    year: number,
+}
+
+export type MonthlyFeeType = {
+    athlete: string,
+    value: number,
+    references: Months[]
+}
