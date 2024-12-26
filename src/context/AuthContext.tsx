@@ -61,14 +61,13 @@ function AuthProvider({ children }: any) {
 
     const loadStoredData = async () => {
         try {
-            const user = await SecureStore.getItemAsync('@efne-user');
-            const keepConnected = await SecureStore.getItemAsync('@efne-keepConnected');
-            const isFirstAccess = await SecureStore.getItemAsync('@efne-isFirstAccess');
+            const user = await SecureStore.getItemAsync('efne-user');
+            const keepConnected = await SecureStore.getItemAsync('efne-keepConnected');
+            const isFirstAccess = await SecureStore.getItemAsync('efne-isFirstAccess');
 
             if (user && keepConnected && isFirstAccess) {
-                setKeepConnected(keepConnected ? JSON.parse(keepConnected) : false);
-                setIsFirstAccess(isFirstAccess ? JSON.parse(isFirstAccess) : true);
-                setUser(user ? JSON.parse(user) : { username: "", password: "", name: "" });
+                setKeepConnected(JSON.parse(keepConnected));
+                setIsFirstAccess(JSON.parse(isFirstAccess));
 
                 if (keepConnected) {
                     setIsAuthenticated(true);
@@ -87,31 +86,34 @@ function AuthProvider({ children }: any) {
     const login = async ({ username, password, keepConnected }: loginType) => {
         try {
             const user = await loginFirebase(username, password);
-
+           
             if (user) {
                 // alterar aqui para pegar os dados do usuário via firebase
-                await SecureStore.setItemAsync('@efne-user', JSON.stringify({ username: user.email, name: user.displayName }));
+                await SecureStore.setItemAsync('efne-user', JSON.stringify({ username: user.email, name: user.displayName }));
+                setUser({username, name: user.displayName ?? ""})
 
                 setIsAuthenticated(true);
 
                 if (keepConnected) {
-                    await SecureStore.setItemAsync('@efne-keepConnected', JSON.stringify(keepConnected));
+                    await SecureStore.setItemAsync('efne-keepConnected', JSON.stringify(keepConnected));
+                    await SecureStore.setItemAsync('efne-isFirsAccess', JSON.stringify(false));
                 }
             }
 
         } catch (e) {
             Alert.alert("Login", "Não foi possível logar. Tente novamente mais tarde.");
+            console.error(e)
         }
     }
 
     const register = async ({ name, born, gender, slug, username, password }: registerType) => {
         try {
             const user = await registerFirebase(username, password);
-
+            
             if (user) {
                 setIsFirstAccess(false);
 
-                await SecureStore.setItemAsync('@efne-user', JSON.stringify({ username: username, name: name }));
+                await SecureStore.setItemAsync('efne-user', JSON.stringify({ username: username, name: name }));
             }
         } catch (e) {
             Alert.alert("Cadastro", "Não foi possível cadastrar. Tente novamente mais tarde.");
