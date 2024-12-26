@@ -1,24 +1,30 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-
+import React from 'react';
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import * as eva from '@eva-design/eva';
+import AppNavigation from '@/navigation/AppNavigaton';
+import AuthProvider from '@/context/AuthContext';
+import { ThemeProvider, useThemeContext } from '@/context/ThemeContext';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
+import { NavigationContainer } from '@react-navigation/native';
+import { customMapping } from './custom-mapping';
+import { default as customTheme } from './custom-theme.json';
 
 function App() {
+  const { theme } = useThemeContext();
+
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  )
+    <ThemeProvider>
+      <AuthProvider>
+        <IconRegistry icons={EvaIconsPack} />
+        <ApplicationProvider {...eva} theme={ theme === 'light' ? {...eva.light, ...customTheme} : {...eva.dark, ...customTheme}} customMapping={customMapping}>
+          <NavigationContainer>
+          <AppNavigation />
+          </NavigationContainer>
+        </ApplicationProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
 
 export default App;
