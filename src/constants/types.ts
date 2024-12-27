@@ -98,3 +98,36 @@ export type FrequenciesType = {
     date: Date
     time: string
 }
+
+export type ContactAthleteType = {
+    email?: string,
+    phone: string,
+    isWhatsapp: boolean,
+    city: string,
+    neighborhood: string,
+    number: string,
+    street: string,
+    referencePoint ?: string,
+    zipCode?: string
+}
+
+export type SchoolDataAthleteType = {
+    instituition: string,
+    shift: "matutino" | "verpertino" | "noturno" | "integral",
+    year: string,
+}
+
+export type AthleteType = {
+    name: string,
+    born: Date,
+    height: number,
+    weight: number,
+    position: string,
+    status: "matriculado" | "ativo" | "inativo",
+    father: string,
+    mother: string,
+    aditionalInformation: string,
+    school: SchoolDataAthleteType,
+    category: CategoriesType,
+    contact: ContactAthleteType,
+}
