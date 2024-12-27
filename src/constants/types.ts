@@ -86,3 +86,15 @@ export type MonthlyFeeType = {
     value: number,
     references: Months[]
 }
+
+export type FrequencyType = {
+    athlete: string,
+    was_present: boolean,
+}
+
+export type FrequenciesType = {
+    athletes: FrequencyType[],
+    category: CategoriesType,
+    date: Date
+    time: string
+}
