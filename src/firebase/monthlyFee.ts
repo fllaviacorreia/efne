@@ -4,9 +4,11 @@ import { MonthlyFeeType } from "@/constants/types";
 
 const db = getFirestore(app)
 
+const dbName = "MonthlyFee"
+
 export async function getAllMonlyFee(){
     try {
-        const querySnapshot = await getDocs(collection(db, "MonthlyFee"));
+        const querySnapshot = await getDocs(collection(db, dbName));
         querySnapshot.forEach((doc) => {
             console.log(`${doc.id} => ${doc.data()}`);
         });
@@ -17,7 +19,7 @@ export async function getAllMonlyFee(){
 
 export async function getMonthlyFee(id: string) {
     try{
-        const docRef = doc(db, "MonthlyFee", id);
+        const docRef = doc(db, dbName, id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -34,7 +36,7 @@ export async function getMonthlyFee(id: string) {
 
 export async function createMonthlyFee(data: MonthlyFeeType) {
     try {
-        const docRef = await addDoc(collection(db, "MonthlyFee"), {
+        const docRef = await addDoc(collection(db, dbName), {
             ...data,
             createdAt: Date.now().toLocaleString("pt-BR")
         });
@@ -46,7 +48,7 @@ export async function createMonthlyFee(data: MonthlyFeeType) {
 
 export async function editMonthlyFee(data: MonthlyFeeType, id: string) {
     try {
-        await setDoc(doc(db, "MonthlyFee", id), {
+        await setDoc(doc(db, dbName, id), {
             ...data,
             updatedAt: Date.now().toLocaleString("pt-BR")
         });
@@ -58,7 +60,7 @@ export async function editMonthlyFee(data: MonthlyFeeType, id: string) {
 
 export async function deleteMonthlyFee(id: string) {
     try {
-        await deleteDoc(doc(db, "MonthlyFee", id));
+        await deleteDoc(doc(db, dbName, id));
     } catch (e: any) {
         throw new Error(e.message)
     }

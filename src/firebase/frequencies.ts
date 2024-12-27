@@ -4,9 +4,11 @@ import { FrequenciesType } from "@/constants/types";
 
 const db = getFirestore(app)
 
+const dbName = "Frequencies"
+
 export async function getAllFrequencies() {
     try {
-        const querySnapshot = await getDocs(collection(db, "Frequencies"));
+        const querySnapshot = await getDocs(collection(db, dbName));
         querySnapshot.forEach((doc) => {
             console.log(`${doc.id} => ${doc.data()}`);
         });
@@ -17,7 +19,7 @@ export async function getAllFrequencies() {
 
 export async function getFrequency(id: string) {
     try {
-        const docRef = doc(db, "Frequencies", id);
+        const docRef = doc(db, dbName, id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -34,7 +36,7 @@ export async function getFrequency(id: string) {
 
 export async function createFrequency(data: FrequenciesType) {
     try {
-        const docRef = await addDoc(collection(db, "Frequencies"), { 
+        const docRef = await addDoc(collection(db, dbName), { 
             ...data, 
             createdAt: Date.now().toLocaleString("pt-BR") 
         });
@@ -46,7 +48,7 @@ export async function createFrequency(data: FrequenciesType) {
 
 export async function editFrequency(data: FrequenciesType, id: string) {
     try {
-        await setDoc(doc(db, "Frequencies", id), {
+        await setDoc(doc(db, dbName, id), {
             ...data,
             updatedAt: Date.now().toLocaleString("pt-BR")
         });
@@ -59,7 +61,7 @@ export async function editFrequency(data: FrequenciesType, id: string) {
 
 export async function deleteMFrequency(id: string) {
     try {
-        await deleteDoc(doc(db, "Frequencies", id));
+        await deleteDoc(doc(db, dbName, id));
     } catch (e: any) {
         throw new Error(e.message)
     }

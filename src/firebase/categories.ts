@@ -4,9 +4,10 @@ import { CategoriesType } from "@/constants/types";
 
 const db = getFirestore(app)
 
+const dbName = "Categories"
 export async function getAllCategories() {
     try {
-        const querySnapshot = await getDocs(collection(db, "Categories"));
+        const querySnapshot = await getDocs(collection(db, dbName));
         querySnapshot.forEach((doc) => {
             console.log(`${doc.id} => ${doc.data()}`);
         });
@@ -27,7 +28,7 @@ export async function createCategory(data: CategoriesType) {
             return acc;
         }, {} as Record<string, string>);
 
-        const docRef = await addDoc(collection(db, "Categories"), {
+        const docRef = await addDoc(collection(db, dbName), {
             name: data.name,
             status: data.status,
             training_days: formattedTrainingDays,
@@ -43,7 +44,7 @@ export async function createCategory(data: CategoriesType) {
 
 export async function deleteCategory(id: string) {
     try {
-        await deleteDoc(doc(db, "Categories", id));
+        await deleteDoc(doc(db, dbName, id));
     } catch (e: any) {
         throw new Error(e.message)
     }
@@ -51,7 +52,7 @@ export async function deleteCategory(id: string) {
 
 export async function getCategory(id: string) {
     try{
-        const docRef = doc(db, "Categories", id);
+        const docRef = doc(db, dbName, id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -78,7 +79,7 @@ export async function editCategory(data: CategoriesType, id: string) {
             return acc;
         }, {} as Record<string, string>);
 
-        await setDoc(doc(db, "Categories", id), {
+        await setDoc(doc(db, dbName, id), {
             name: data.name,
             status: data.status,
             training_days: formattedTrainingDays,

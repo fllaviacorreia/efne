@@ -4,9 +4,12 @@ import { OutType, PaymentType } from "@/constants/types";
 
 const db = getFirestore(app)
 
+const dbNamePayments = "Payments"
+const dbNameOuts = "Outs"
+
 export async function getAllPayments() {
     try {
-        const querySnapshot = await getDocs(collection(db, "Payments"));
+        const querySnapshot = await getDocs(collection(db, dbNamePayments));
         querySnapshot.forEach((doc) => {
             console.log(`${doc.id} => ${doc.data()}`);
         });
@@ -17,7 +20,7 @@ export async function getAllPayments() {
 
 export async function deletePayment(id: string) {
     try {
-        await deleteDoc(doc(db, "Payments", id));
+        await deleteDoc(doc(db, dbNamePayments, id));
     } catch (e: any) {
         throw new Error(e.message)
     }
@@ -25,7 +28,7 @@ export async function deletePayment(id: string) {
 
 export async function getPayment(id: string) {
     try{
-        const docRef = doc(db, "Payments", id);
+        const docRef = doc(db, dbNamePayments, id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -42,7 +45,7 @@ export async function getPayment(id: string) {
 
 export async function createPayment(data: PaymentType) {
     try {
-        const docRef = await addDoc(collection(db, "Payments"), {
+        const docRef = await addDoc(collection(db, dbNamePayments), {
             ...data, 
             createdAt: Date.now().toLocaleString("pt-BR")
         });
@@ -54,7 +57,7 @@ export async function createPayment(data: PaymentType) {
 
 export async function editPayment(data: PaymentType, id: string) {
     try {
-        await setDoc(doc(db, "Payments", id), {
+        await setDoc(doc(db, dbNamePayments, id), {
             ...data,
             updatedAt: Date.now().toLocaleString("pt-BR")
         });
@@ -66,7 +69,7 @@ export async function editPayment(data: PaymentType, id: string) {
 
 export async function createOut(data: OutType) {
     try {
-        const docRef = await addDoc(collection(db, "Outs"), {
+        const docRef = await addDoc(collection(db, dbNameOuts), {
             ...data, 
             createdAt: Date.now().toLocaleString("pt-BR")
         });
@@ -78,7 +81,7 @@ export async function createOut(data: OutType) {
 
 export async function editOut(data: OutType, id: string) {
     try {
-        await setDoc(doc(db, "Outs", id), {
+        await setDoc(doc(db, dbNameOuts, id), {
             ...data,
             updatedAt: Date.now().toLocaleString("pt-BR")
         });
@@ -90,7 +93,7 @@ export async function editOut(data: OutType, id: string) {
 
 export async function getOut(id: string) {
     try{
-        const docRef = doc(db, "Outs", id);
+        const docRef = doc(db, dbNameOuts, id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -107,7 +110,7 @@ export async function getOut(id: string) {
 
 export async function getAllOuts() {
     try {
-        const querySnapshot = await getDocs(collection(db, "Outs"));
+        const querySnapshot = await getDocs(collection(db, dbNameOuts));
         querySnapshot.forEach((doc) => {
             console.log(`${doc.id} => ${doc.data()}`);
         });
@@ -118,7 +121,7 @@ export async function getAllOuts() {
 
 export async function deleteOut(id: string) {
     try {
-        await deleteDoc(doc(db, "Outs", id));
+        await deleteDoc(doc(db, dbNameOuts, id));
     } catch (e: any) {
         throw new Error(e.message)
     }
