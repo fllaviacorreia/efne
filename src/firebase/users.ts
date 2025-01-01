@@ -4,9 +4,10 @@ import { userType } from "@/constants/types";
 
 const db = getFirestore(app)
 
+const dbName = "Users"
 export async function createUser(data: userType) {
     try {
-        const docRef = await addDoc(collection(db, "Users"), {
+        const docRef = await addDoc(collection(db, dbName), {
             ...data,
             createdAt: Date.now().toLocaleString("pt-BR")
         });
@@ -20,7 +21,7 @@ export async function createUser(data: userType) {
 
 export async function editUser(data: userType) {
     try {
-        await setDoc(doc(db, "Users", data.loginId), {
+        await setDoc(doc(db, dbName, data.loginId), {
             ...data,
             updatedAt: Date.now().toLocaleString("pt-BR")
         });
@@ -33,7 +34,7 @@ export async function editUser(data: userType) {
 
 export async function deleteUser(id: string) {
     try {
-        await deleteDoc(doc(db, "Users", id));
+        await deleteDoc(doc(db, dbName, id));
     } catch (e: any) {
         throw new Error(e.message)
     }
@@ -41,7 +42,7 @@ export async function deleteUser(id: string) {
 
 export async function getUser(id: string) {
     try{
-        const docRef = doc(db, "Users", id);
+        const docRef = doc(db, dbName, id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -58,7 +59,7 @@ export async function getUser(id: string) {
 
 export async function getAllUsers() {
     try {
-        const querySnapshot = await getDocs(collection(db, "Users"));
+        const querySnapshot = await getDocs(collection(db, dbName));
         querySnapshot.forEach((doc) => {
             console.log(`${doc.id} => ${doc.data()}`);
         });

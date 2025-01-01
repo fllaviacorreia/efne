@@ -1,5 +1,6 @@
 import { AuthContextType, loginType, registerType, userType } from '@/constants/types';
 import { loginFirebase, registerFirebase } from '@/firebase/authentication';
+import { getUser } from '@/firebase/users';
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useContext, useEffect, useState } from "react";
 import { Alert } from "react-native"
@@ -8,7 +9,7 @@ const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     isFirstAccess: true,
     keepConnected: false,
-    user: { username: "", name: "" },
+    user: { username: "", born: new Date(), gender: "outro", loginId: "", name: "", slug: "responsavel", status: "ativo" },
 
     login: async () => { },
     register: async () => { },
@@ -23,7 +24,15 @@ function AuthProvider({ children }: any) {
     const [isFirstAccess, setIsFirstAccess] = useState<boolean>(true);
     const [keepConnected, setKeepConnected] = useState<boolean>(false);
 
-    const [user, setUser] = useState<userType>({ username: "", name: "" });
+    const [user, setUser] = useState<userType>({ 
+        username: "", 
+        born: new Date(), 
+        gender: "outro", 
+        loginId: "", 
+        name: "", 
+        slug: "responsavel", 
+        status: "ativo" 
+    });
 
     const loadStoredData = async () => {
         try {
@@ -52,20 +61,34 @@ function AuthProvider({ children }: any) {
     const login = async ({ username, password, keepConnected }: loginType) => {
         try {
             const user = await loginFirebase(username, password);
-           
+        
             if (user) {
-                // alterar aqui para pegar os dados do usuário via firebase
-                await SecureStore.setItemAsync('efne-user', JSON.stringify({ username: user.email, name: user.displayName }));
-                setUser({username, name: user.displayName ?? ""})
+                const dataUser = await getUser(user.uid);
 
-                setIsAuthenticated(true);
+                if (dataUser) {                    
+                    setUser({
+                        username,
+                        name: dataUser.name ?? "",
+                        gender: dataUser.gender ?? "outro",
+                        born: dataUser.born ?? new Date(),
+                        status: dataUser.status ?? "ativo",
+                        slug: dataUser.slug ?? "responsavel",
+                        loginId: user.uid,
+                    })
 
-                if (keepConnected) {
-                    await SecureStore.setItemAsync('efne-keepConnected', JSON.stringify(keepConnected));
-                    await SecureStore.setItemAsync('efne-isFirsAccess', JSON.stringify(false));
+                    await SecureStore.setItemAsync('efne-user', JSON.stringify(user));
+                    setIsAuthenticated(true);
+
+                    if (keepConnected) {
+                        await SecureStore.setItemAsync('efne-keepConnected', JSON.stringify(keepConnected));
+                        await SecureStore.setItemAsync('efne-isFirsAccess', JSON.stringify(false));
+                    }
+                } else {
+                    Alert.alert("Login", "Erro ao buscar dados da conta." + dataUser);
                 }
+            } else {
+                Alert.alert("Login", "Erro ao logar na sua conta." + user);
             }
-
         } catch (e) {
             Alert.alert("Login", "Não foi possível logar. Tente novamente mais tarde.");
             console.error(e)
