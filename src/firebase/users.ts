@@ -1,6 +1,7 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore";
 import { app } from "./config";
 import { userType } from "@/constants/types";
+import { getAuth } from "@firebase/auth";
 
 const db = getFirestore(app)
 
@@ -16,6 +17,22 @@ export async function createUser(data: userType) {
 
     } catch (e: any) {
         throw new Error(e.message);
+    }
+}
+
+export function createProfile(data: userType) {
+    try {
+       const auth = getAuth();
+       const currentUser = auth.currentUser;
+       
+       if (currentUser) {
+        setDoc(doc(db, dbName, currentUser.uid), {
+            ...data,
+            createdAt: Date.now().toLocaleString("pt-BR")
+        });
+       }
+    } catch (e: any) {
+        throw new Error(e.message)
     }
 }
 
@@ -54,6 +71,26 @@ export async function getUser(id: string) {
         }
     } catch (e: any) {
         throw new Error(e.message)
+    }
+}
+
+export async function getProfile() {
+    try {
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+        console.log("currentUser", currentUser)
+
+        if (!currentUser) {
+            throw new Error("Usuário não autenticado.");
+        }
+
+        const data = getUser(currentUser.uid);
+
+        console.log("data", data)
+        return data;
+
+    } catch (e: any) {
+        throw new Error(e)
     }
 }
 

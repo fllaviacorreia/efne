@@ -1,5 +1,10 @@
+import { 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    initializeAuth, 
+    getReactNativePersistence 
+} from "firebase/auth";
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, initializeAuth, getReactNativePersistence } from "firebase/auth";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 import { app } from "./config";

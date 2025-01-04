@@ -1,5 +1,16 @@
 import { initializeApp } from "firebase/app";
-import {FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID, FIREBASE_MEASUREMENT_ID} from '@env'
+import { 
+  FIREBASE_API_KEY, 
+  FIREBASE_AUTH_DOMAIN, 
+  FIREBASE_PROJECT_ID, 
+  FIREBASE_STORAGE_BUCKET, 
+  FIREBASE_MESSAGING_SENDER_ID, 
+  FIREBASE_APP_ID, 
+  FIREBASE_MEASUREMENT_ID, 
+  TEXT_TO_TEST } 
+from '@env'
+
+console.log(TEXT_TO_TEST)
 
 // Carregue as variáveis de ambiente do arquivo .env
 const firebaseConfig = {
@@ -9,7 +20,7 @@ const firebaseConfig = {
   storageBucket: FIREBASE_STORAGE_BUCKET,
   messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
   appId: FIREBASE_APP_ID,
-  measurementId: FIREBASE_MEASUREMENT_ID
+  measurementId: FIREBASE_MEASUREMENT_ID,
 };
 // Inicialize o Firebase
 const app = initializeApp(firebaseConfig);
