@@ -16,7 +16,6 @@ type loginParamsList = NativeStackNavigationProp<RoutesParamList, "Login">;
 export default function LoginScreen() {
   const { login } = useAuth();
   const [assets, error] = useAssets([require('assets/icon.png')]);
-  const [loading, setLoading] = useState(false);
   const navigation = useNavigation<loginParamsList>();
 
   const passwordRef = useRef<Input>(null);
@@ -27,12 +26,8 @@ export default function LoginScreen() {
   const onSubmitting = async (value: { username: string, password: string, keepConnected: boolean }) => {
     try {
       await login(value);
-      setLoading(true);
     } catch (e) {
       alert("Erro ao logar.")
-    }
-    finally {
-      setLoading(false)
     }
   }
 
@@ -58,12 +53,12 @@ export default function LoginScreen() {
         {/* Container para o formulário de login */}
         <Layout style={styles.containerForm}>
           <Formik
-            initialValues={{ username: '', password: '', keepConnected: false }}
+            initialValues={{ username: 'freelas.jequie@gmail.com', password: 'freelas.jequie', keepConnected: false }}
             validationSchema={LoginSchema}
             onSubmit={(value) => onSubmitting(value)}
           >
             {
-              ({ handleChange, handleBlur, handleSubmit, values, setFieldValue, errors, touched }) => (
+              ({ handleChange, handleBlur, handleSubmit, values, setFieldValue, errors, touched, isSubmitting }) => (
                 <Layout>
                   <Layout style={styles.containerInput}>
                     <Input
@@ -107,7 +102,7 @@ export default function LoginScreen() {
                     </Button>
                   </Layout>
 
-                  <Button style={styles.button} size="medium" onPress={handleSubmit as any} disabled={loading}>{loading ? "Entrando..." : "Entrar"}</Button>
+                  <Button style={styles.button} size="medium" onPress={handleSubmit as any} disabled={isSubmitting}>{isSubmitting ? "Entrando..." : "Entrar"}</Button>
                 </Layout>
 
               )

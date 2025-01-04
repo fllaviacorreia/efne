@@ -1,6 +1,6 @@
 import { AuthContextType, loginType, registerType, userType } from '@/constants/types';
 import { loginFirebase, registerFirebase } from '@/firebase/authentication';
-import { getUser } from '@/firebase/users';
+import { getProfile } from '@/firebase/users';
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useContext, useEffect, useState } from "react";
 import { Alert } from "react-native"
@@ -61,9 +61,10 @@ function AuthProvider({ children }: any) {
     const login = async ({ username, password, keepConnected }: loginType) => {
         try {
             const user = await loginFirebase(username, password);
-        
+
             if (user) {
-                const dataUser = await getUser(user.uid);
+                const dataUser = await getProfile();
+                console.log(dataUser);
 
                 if (dataUser) {                    
                     setUser({
@@ -78,10 +79,15 @@ function AuthProvider({ children }: any) {
 
                     await SecureStore.setItemAsync('efne-user', JSON.stringify(user));
                     setIsAuthenticated(true);
-
+                    setIsFirstAccess(false);
+                    
+                    await SecureStore.setItemAsync('efne-isFirsAccess', JSON.stringify(false));
+                    
                     if (keepConnected) {
                         await SecureStore.setItemAsync('efne-keepConnected', JSON.stringify(keepConnected));
                         await SecureStore.setItemAsync('efne-isFirsAccess', JSON.stringify(false));
+                        
+                        setKeepConnected(true);
                     }
                 } else {
                     Alert.alert("Login", "Erro ao buscar dados da conta." + dataUser);
@@ -127,7 +133,10 @@ function AuthProvider({ children }: any) {
 
     const logout = async () => {
         try {
-
+            setIsAuthenticated(false);
+            setKeepConnected(false);
+            await SecureStore.deleteItemAsync('efne-user');
+            await SecureStore.deleteItemAsync('efne-keepConnected');
         } catch (e) {
             Alert.alert("Logout", "Não foi possível deslogar. Tente novamente mais tarde.");
         }
