@@ -4,16 +4,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RoutesParamList } from '@/navigation/AppNavigaton';
 import { useNavigation } from '@react-navigation/native';
 
-type homeScreenProp = NativeStackNavigationProp<RoutesParamList, "Home">;
+type detailsFinancialScreenProp = NativeStackNavigationProp<RoutesParamList, "DetailsFinancial">;
 
-export default function HomeScreen() {
-    const navigation = useNavigation<homeScreenProp>();
+export default function DetailsFinancialScreen() {
+    const navigation = useNavigation<detailsFinancialScreenProp>();
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
+      <Text>Details Financial Screen</Text>
       <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details')}
+        title="Go back"
+        onPress={() => navigation.goBack()}
       />
     </View>
   );
