@@ -5,12 +5,16 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "@firebase/auth": ["./node_modules/@firebase/auth/dist/index.rn.d.ts"],
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/navigation/*": ["./src/navigation/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/context/*": ["./src/context/*"],
+      "@/screens/*": ["./src/screens/*"],
+      "@/validators/*": ["./src/validators/*"],
+      "@/firebase/*": ["./src/firebase/*"],
+      "@/assets/*": ["./assets/*"]
     }
   },
   "include": ["env.d.ts", "src/**/*"],

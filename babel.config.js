@@ -15,7 +15,6 @@ module.exports = function (api) {
             '@/validators': './src/validators',
             '@/firebase': './src/firebase',
             '@/assets': './assets',
-            '@': './src',
           },
         },
       ],

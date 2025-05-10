@@ -23,16 +23,22 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "build": {
-        "babel" : {
-          "include": ["@ui-kitten/components"]
+        "babel": {
+          "include": [
+            "@ui-kitten/components"
+          ]
         }
       }
     },
-    "extra": {
-      
-    },
+    "extra": {},
     "plugins": [
-  
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ]
     ]
   }
 }
