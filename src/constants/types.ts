@@ -1,8 +1,10 @@
+import { Timestamp } from "firebase/firestore"
 
 export type userType = {
     name: string,
     gender: "feminino" | "masculino" | "outro",
     username: string,
+    password?: string,
     born: Date,
     status: "ativo" | "inativo",
     slug: "master" | "administrador" | "treinador" | "responsavel",
@@ -25,6 +27,7 @@ export type registerType = {
 }
 
 export type AuthContextType = {
+    loading: boolean,
     isAuthenticated: boolean,
     isFirstAccess: boolean,
     keepConnected: boolean,
@@ -61,19 +64,23 @@ export type OutType = {
 }
 
 export type TrainingDayType = {
-    value: "Segunda" | "Terça" | "Quarta" | "Quinta" | "Sexta" | "Sábado" | "Domingo",
+    day: "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo",
+    trainingSchedule: TrainingScheduleType,
 }
 
 export type TrainingScheduleType = {
-    day: string,
-    hour: string,
+    start: string,
+    end: string,
 }
 
-export type CategoriesType = {
+export type CategoryType = {
+    id?: string,
     name: string,
     status: "ativo" | "inativo",
+    totalAthletes: number,
     trainingDays: TrainingDayType[],
-    trainingSchedule: TrainingScheduleType[],
+    createdAt?: Timestamp,
+    updatedAt?: string,
 }
 
 export type Months = {
@@ -94,7 +101,7 @@ export type FrequencyType = {
 
 export type FrequenciesType = {
     athletes: FrequencyType[],
-    category: CategoriesType,
+    category: CategoryType,
     date: Date
     time: string
 }
@@ -102,7 +109,7 @@ export type FrequenciesType = {
 export type ContactAthleteType = {
     email?: string,
     phone: string,
-    isWhatsapp: boolean,
+    is_whatsapp: boolean,
     city: string,
     neighborhood: string,
     number: string,
@@ -112,22 +119,43 @@ export type ContactAthleteType = {
 }
 
 export type SchoolDataAthleteType = {
-    instituition: string,
+    institution: string,
     shift: "matutino" | "verpertino" | "noturno" | "integral",
     year: string,
 }
 
 export type AthleteType = {
+    id?: string,
+    photo?: string,
     name: string,
     born: Date,
-    height: number,
-    weight: number,
+    height: string,
+    weight: string,
     position: string,
     status: "matriculado" | "ativo" | "inativo",
     father: string,
     mother: string,
     aditionalInformation: string,
     school: SchoolDataAthleteType,
-    category: CategoriesType,
+    category: string,
     contact: ContactAthleteType,
+    createdAt?: Date,
+    updatedAt?: Timestamp,
+}
+
+export type AthletesType = {
+    athletes: AthleteType[],
+
+    createAthlete: (data: AthleteType) => Promise<void>,
+    editAthlete: (data: AthleteType, id: string) => Promise<void>,
+    deleteAthlete: (id: string) => Promise<void>,
+}
+
+export type CategoriesContextType = {
+    categories: CategoryType[],
+    createCategory: (data: CategoryType) => Promise<void>,
+    getAllCategories: () => Promise<void>,
+    getOneCategory: (id: string) => Promise<CategoryType | undefined>,
+    editCategory: (data: CategoryType, id: string) => Promise<void>,
+    deleteCategory: (id: string) => Promise<void>,
 }
