@@ -1,7 +1,8 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore";
 import { app } from "./config";
 import { userType } from "@/constants/types";
-import { getAuth } from "@firebase/auth";
+import { getCurrentUser } from "./authentication";
+import { getAuth } from "firebase/auth";
 
 const db = getFirestore(app)
 
@@ -22,15 +23,19 @@ export async function createUser(data: userType) {
 
 export function createProfile(data: userType) {
     try {
-       const auth = getAuth();
-       const currentUser = auth.currentUser;
+       const currentUser = getCurrentUser();
+      
+          if (!currentUser) {
+              throw new Error("Usuário não autenticado.");
+          }
+      
        
-       if (currentUser) {
+       
         setDoc(doc(db, dbName, currentUser.uid), {
             ...data,
             createdAt: Date.now().toLocaleString("pt-BR")
         });
-       }
+       
     } catch (e: any) {
         throw new Error(e.message)
     }
@@ -63,7 +68,6 @@ export async function getUser(id: string) {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
             return docSnap.data();
         } else {
             // doc.data() will be undefined in this case
@@ -76,9 +80,8 @@ export async function getUser(id: string) {
 
 export async function getProfile() {
     try {
-        const auth = getAuth();
-        const currentUser = auth.currentUser;
-        console.log("currentUser", currentUser)
+        
+        const currentUser = getCurrentUser();
 
         if (!currentUser) {
             throw new Error("Usuário não autenticado.");
@@ -86,7 +89,6 @@ export async function getProfile() {
 
         const data = getUser(currentUser.uid);
 
-        console.log("data", data)
         return data;
 
     } catch (e: any) {

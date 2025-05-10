@@ -1,64 +1,149 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, increment, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { app } from "@/firebase/config";
 import { AthleteType } from "@/constants/types";
+import { getAuth } from "firebase/auth";
+import { getCurrentUser } from "./authentication";
 
 const db = getFirestore(app)
 
-const dbName = "Athetes"
-export async function getAllAthletes() {
+const dbName = "Athletes"
+
+export async function getAllAthletesFirebase() {
+    const currentUser = getCurrentUser();
+
+    if (!currentUser) {
+        throw new Error("Usuário não autenticado.");
+    }
+
     try {
-        const querySnapshot = await getDocs(collection(db, dbName));
-        querySnapshot.forEach((doc) => {
-            console.log(`${doc.id} => ${doc.data()}`);
+        const athletesCollection = collection(db, dbName);
+        const querySnapshot = await getDocs(athletesCollection);
+
+        const data: AthleteType[] = querySnapshot.docs.map((doc) => {
+            return {
+                ...doc.data(),
+                born: new Date(doc.data().born.seconds * 1000),
+                createdAt: new Date(doc.data().createdAt.seconds * 1000)
+            } as AthleteType
         });
+
+        return data;
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error("Error getting documents:", e.message);
+        throw new Error(e.message);
     }
 }
 
-export async function getAthlete(id: string) {
+export async function getAthleteFirebase(id: string) {
     try {
         const docRef = doc(db, dbName, id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
             return docSnap.data();
         } else {
             // doc.data() will be undefined in this case
-            console.log("No such document!");
+            return null
         }
     } catch (e: any) {
 
     }
 }
 
-export async function createAthlete(data: AthleteType) {
+export async function createAthleteFirebase(data: AthleteType) {
     try {
+      let photoURL = "";
+  
+      if (data.photo) {
+        const filename = `athletes/${data.name}_${Date.now()}.jpg`;
+        photoURL = await uploadImageAsync(data.photo, filename);
+      }
+  
+      const dataToSave = {
+        ...data,
+        photo: photoURL,
+        born: new Date(data.born).getTime() / 1000,
+        createdAt: serverTimestamp(),
+      };
+  
+      const categoryRef = doc(db, "Categories", data.category);
+  
+      const result = await runTransaction(db, async (transaction) => {
         const docRef = await addDoc(collection(db, dbName), {
-            ...data,
-            createdAt: Date.now().toLocaleString("pt-BR")
+            ...dataToSave,
+            born: new Date(data.born),
+            createdAt: serverTimestamp(),
         });
-        console.log("Document written with ID: ", docRef.id);
+
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return { id: docRef.id, ...docSnap.data() } as AthleteType;
+        } else {
+            throw new Error("Document does not exist.");
+        }
+
+        
+        // 🔼 Atualiza o total de atletas na categoria
+        transaction.update(categoryRef, {
+          totalAthletes: increment(1),
+        });
+  
+        return { id: docSnap.id, ...docSnap.data() } as AthleteType;
+      });
+  
+      return result;
     } catch (e: any) {
-        throw new Error(e.message)
+      console.error("Erro ao cadastrar atleta:", e);
+      throw new Error(e.message || "Erro ao cadastrar atleta.");
     }
+  }
+
+export async function uploadImageAsync(uri: string, path: string): Promise<string> {
+    const uid = getCurrentUser()?.uid;
+    if (!uid) {
+        throw new Error("Usuário não autenticado.");
+    }
+    console.log("UID do usuário atual:", uid);
+
+    const userSnap = await getDoc(doc(db, "Users", uid));
+
+    if (!userSnap.exists()) {
+        throw new Error("Usuário não encontrado.");
+    }
+
+    const userSlug = userSnap.data()?.slug;
+
+    if (userSlug !== "master" && userSlug !== "administrador ") {
+        throw new Error("Usuário não autorizado para realizar upload de imagens.");
+    }
+
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    const storage = getStorage();
+    const storageRef = ref(storage, path);
+
+    await uploadBytes(storageRef, blob);
+
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
 }
 
-export async function editAthlete(data: AthleteType, id: string) {
+export async function editAthleteFirebase(data: AthleteType, id: string) {
     try {
         await setDoc(doc(db, dbName, id), {
             ...data,
-            updatedAt: Date.now().toLocaleString("pt-BR")
+            updatedAt: serverTimestamp(),
         });
-        console.log("Document written with ID: ", id);
+
     } catch (e: any) {
         throw new Error(e.message)
     }
 }
 
 
-export async function deleteAthlete(id: string) {
+export async function deleteAthleteFirebase(id: string) {
     try {
         await deleteDoc(doc(db, dbName, id));
     } catch (e: any) {
