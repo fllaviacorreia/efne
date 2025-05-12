@@ -8,6 +8,7 @@ const Stack = createNativeStackNavigator<RoutesParamList>();
 
 export default function AuthNavigation() {
     const { isFirstAccess } = useAuth();
+    
     return (
         <Stack.Navigator initialRouteName={isFirstAccess ? "Register" : "Login"} screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Login" component={LoginScreen} />

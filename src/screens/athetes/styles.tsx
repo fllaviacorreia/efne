@@ -8,6 +8,7 @@ const styles = StyleService.create({
         paddingTop: 48,    
         height: "100%" 
     },
+    
     containerImg:{
         width: "100%",
         marginBottom: 30,

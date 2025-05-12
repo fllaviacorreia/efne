@@ -1,13 +1,16 @@
 import { useAuth } from "@/context/AuthContext";
 import AuthNavigation from "./AuthNavigation";
 import { Tabs } from "./BottomNavigation";
+import { AthleteType } from "@/constants/types";
+import Loading from "@/screens/default/loading";
+
 
 export type RoutesParamList = {
     Login: undefined;
     Register: undefined;
     ForgotPassword: undefined;
     ListAthletes: undefined;
-    DetailsAthlete: undefined; // (passa pela rota os dados)
+    DetailsAthlete: { athlete: AthleteType}; // (passa pela rota os dados)
     NewAthlete: undefined;
     ListCategories: undefined;
     DetailsCategory: undefined; // (passa pela rota os dados)
@@ -22,7 +25,11 @@ export type RoutesParamList = {
 }
 
 export default function AppNavigation() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <Loading />
+  }
 
  return isAuthenticated ? <Tabs /> : <AuthNavigation />
 }

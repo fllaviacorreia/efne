@@ -2,7 +2,6 @@ import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, incr
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { app } from "@/firebase/config";
 import { AthleteType } from "@/constants/types";
-import { getAuth } from "firebase/auth";
 import { getCurrentUser } from "./authentication";
 
 const db = getFirestore(app)
@@ -11,7 +10,7 @@ const dbName = "Athletes"
 
 export async function getAllAthletesFirebase() {
     const currentUser = getCurrentUser();
-
+    
     if (!currentUser) {
         throw new Error("Usuário não autenticado.");
     }
@@ -77,22 +76,19 @@ export async function createAthleteFirebase(data: AthleteType) {
         });
 
         const docSnap = await getDoc(docRef);
+
         if (docSnap.exists()) {
+        transaction.update(categoryRef, {
+            totalAthletes: increment(1),
+          });
+          
             return { id: docRef.id, ...docSnap.data() } as AthleteType;
         } else {
             throw new Error("Document does not exist.");
         }
-
-        
-        // 🔼 Atualiza o total de atletas na categoria
-        transaction.update(categoryRef, {
-          totalAthletes: increment(1),
-        });
-  
-        return { id: docSnap.id, ...docSnap.data() } as AthleteType;
       });
-  
-      return result;
+
+        return result;
     } catch (e: any) {
       console.error("Erro ao cadastrar atleta:", e);
       throw new Error(e.message || "Erro ao cadastrar atleta.");

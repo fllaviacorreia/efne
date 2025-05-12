@@ -24,7 +24,7 @@ export const initialValuesAthlete: AthleteType = {
       shift: "matutino",
       year: "4º ano do fundamental",
     },
-    status: "ativo",
+    status: "matriculado",
     category: "", // Defina o valor inicial apropriado
     contact: {
       city: "Jequié",

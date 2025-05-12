@@ -36,9 +36,9 @@ const SettingsStack = createNativeStackNavigator();
 function AthletesStackScreen() {
   return (
     <AthletesStack.Navigator screenOptions={{ headerShown: false }}>
-      <AthletesStack.Screen name="ListAthletes" component={ListAthletesScreen}/>
+      <AthletesStack.Screen name="ListAthletes" component={ListAthletesScreen} options={{ headerShown: true, headerTitle: 'Atletas', headerTitleAlign: 'center',}}/>
       <AthletesStack.Screen name="DetailsAthlete" component={DetailsAthleteScreen}/>
-      <AthletesStack.Screen name="NewAthlete" component={NewAthleteScreen} />
+      <AthletesStack.Screen name="NewAthlete" component={NewAthleteScreen} options={{ headerShown: true, headerTitle: 'Novo atleta', headerTitleAlign: 'center' }}/>
     </AthletesStack.Navigator>
   );
 }
@@ -46,9 +46,9 @@ function AthletesStackScreen() {
 function CategoriesStackScreen() {
   return (
     <CategoriesStack.Navigator screenOptions={{headerShown: false}}>
-      <CategoriesStack.Screen name="ListCategories" component={ListCategoriesScreen} options={{ headerShown: false }} />
-      <CategoriesStack.Screen name="DetailsCategory" component={DetailsCategoryScreen} options={{ headerShown: false }}/>
-      <CategoriesStack.Screen name="NewCategory" component={NewCategoryScreen} options={{ headerShown: false }}/>
+      <CategoriesStack.Screen name="ListCategories" component={ListCategoriesScreen} options={{ headerShown: true, headerTitle: 'Categorias', headerTitleAlign: 'center',}}/>
+      <CategoriesStack.Screen name="DetailsCategory" component={DetailsCategoryScreen} />
+      <CategoriesStack.Screen name="NewCategory" component={NewCategoryScreen} options={{ headerShown: true, headerTitle: 'Nova categoria', headerTitleAlign: 'center' }}/>
     </CategoriesStack.Navigator>
   )
 }
@@ -76,7 +76,7 @@ function FrequenciesStackScreen() {
 function SettingsStackScreen() {
   return (
     <SettingsStack.Navigator screenOptions={{headerShown: false}}>
-      <SettingsStack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} key="Settings" />
+      <SettingsStack.Screen name="Configs" component={SettingsScreen} options={{ headerShown: false }} key="Configs" />
     </SettingsStack.Navigator>
   )
 }

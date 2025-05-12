@@ -6,12 +6,13 @@ type Props = {
     data: AthleteType,
 }
 export default function AthleteCard({ data }: Props) {
+    const uriImage = data?.photo ? { uri: data.photo } : require("../../../assets/person_default.jpg")
     const age = calculateAge(data.born)
 
     return (
         <Layout style={styles.container}>
             <Layout style={styles.containerLeft}>
-                <Image style={styles.image} source={{ uri: data?.photo || "https://img.freepik.com/free-vector/add-new-user_78370-4710.jpg?t=st=1746909863~exp=1746913463~hmac=094a01487b2b9c80b17e73651563170008fa9a11c17a3e373d48eaea7fc489e0&w=740" }} />
+                <Image style={styles.image} source={uriImage} />
             </Layout>
             <Layout style={styles.containerRight}>
                 <Text category='h5' style={styles.text}>{data.name}</Text>
@@ -29,12 +30,22 @@ export default function AthleteCard({ data }: Props) {
 const styles = StyleService.create({
     container: {
         flexDirection: "row",
-        width: "100%", 
+        width: "99%", 
         alignItems: "center", 
         paddingVertical: 10,
-        borderShadowColor: "#ccc",
-        borderBottomWidth: 1,
-        height: 180,
+        paddingHorizontal: 10,
+        height: 200,
+        shadowColor: "#000",
+        borderWidth: 0,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        marginVertical: 10,
+        borderRadius: 12,
     },
     containerLeft: {
         marginRight: 10,
@@ -57,7 +68,7 @@ const styles = StyleService.create({
     image: { 
         width: "100%", 
         height: 160, 
-        borderRadius: 12
+        borderRadius: 20
     },    
 })
 

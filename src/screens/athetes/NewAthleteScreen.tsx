@@ -106,7 +106,7 @@ export default function NewAthleteScreen() {
             {({ values, touched, errors, setFieldValue, handleSubmit, validateForm, handleChange }) => (
               <Layout style={styles.container}>
                 <Layout style={styles.containerImg}>
-                  <Image source={{ uri: values.photo || "https://img.freepik.com/free-vector/add-new-user_78370-4710.jpg?t=st=1746909863~exp=1746913463~hmac=094a01487b2b9c80b17e73651563170008fa9a11c17a3e373d48eaea7fc489e0&w=740" }} style={styles.image} />
+                  <Image source={values.photo ? { uri: values.photo} : require("../../../assets/person_default.jpg")} style={styles.image} />
                   <Layout style={styles.containerInput}>
                     <Button status='primary' style={styles.button} onPress={async () => {
                       const result = await ImagePicker.launchImageLibraryAsync({
