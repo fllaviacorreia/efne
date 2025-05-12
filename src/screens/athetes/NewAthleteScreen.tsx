@@ -401,7 +401,7 @@ export default function NewAthleteScreen() {
                 <Layout>
                   <Layout style={styles.row}>
                     <Divider style={styles.divider} />
-                    <Text category='h5'>Dados do atleta</Text>
+                    <Text category='h5'>Dados de contato</Text>
                     <Divider style={styles.divider} />
                   </Layout>
                   <Layout style={styles.containerInput}>
