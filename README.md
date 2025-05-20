@@ -80,6 +80,15 @@ Escaneie o QR Code com o aplicativo Expo Go ou use um emulador.
 
 ---
 
+---
+
+## 🧪 Prototipação
+
+O design e a prototipação do aplicativo foram feitos no Figma. Você pode visualizar o Design System e os protótipos através do link abaixo:
+
+👉 [Acessar protótipo no Figma](https://www.figma.com/design/vuDFqQ9IPLHgE9ESbDUaLN/Design-System?node-id=0-1&p=f&t=BIg9tp7q5Rke4BK0-0)
+
+
 ## 📁 Estrutura do Projeto
 
 ```
