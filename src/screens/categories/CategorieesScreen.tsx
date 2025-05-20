@@ -1,20 +1,22 @@
 import * as React from 'react';
-import { View, Text, Button } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RoutesParamList } from '@/navigation/AppNavigaton';
-import { useNavigation } from '@react-navigation/native';
-
-type listCategoriesScreenProp = NativeStackNavigationProp<RoutesParamList, "ListCategories">;
+import { useCategoriesContext } from '@/context/CategoriesContext';
+import Loading from '../default/loading';
+import NoDataScreen from '../default/noData';
+import ListScreen from '../default/listScreen';
 
 export default function ListCategoriesScreen() {
-    const navigation = useNavigation<listCategoriesScreenProp>();
+  const { categories } = useCategoriesContext();
+
+  if (!categories) {
+    return <Loading />
+  }
+
+  if (categories.length == 0) {
+    return <NoDataScreen text='Nenhuma categoria cadastrada.' nextRoute='NewCategory' />
+  }
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Categories Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('DetailsCategory')}
-      />
-    </View>
+    <ListScreen callCard='CATEGORY' data={categories} nextRoute='NewCategory' />
   );
 }
+
