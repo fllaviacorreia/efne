@@ -1,5 +1,4 @@
 import { mapping } from '@eva-design/eva';
-import { Layout } from 'react-native-reanimated';
 
 export const customMapping = {
   ...mapping,
@@ -12,8 +11,8 @@ export const customMapping = {
             textColor: 'color-primary-100',
             state: {
               active: {
-                backgroundColor: 'color-primary-700',
-              },
+                backgroundColor: 'color-success-700',
+              },              
             },
           },
         },

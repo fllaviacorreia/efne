@@ -1,48 +1,58 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
-import { app } from "@/firebase/config";
-import { CategoriesType } from "@/constants/types";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "@/firebase/config";
+import { getCurrentUser } from "./authentication";
+import { CategoryType } from "@/types/category";
 
-const db = getFirestore(app)
 
 const dbName = "Categories"
-export async function getAllCategories() {
+
+export async function getAllCategoriesFirebase() {
+    const currentUser = getCurrentUser();
+
+    if (!currentUser) {
+        throw new Error("Usuário não autenticado.");
+    }
+
+
     try {
-        const querySnapshot = await getDocs(collection(db, dbName));
-        querySnapshot.forEach((doc) => {
-            console.log(`${doc.id} => ${doc.data()}`);
+        const categoriesCollection = collection(db, dbName);
+        const querySnapshot = await getDocs(categoriesCollection);
+
+        const data: CategoryType[] = querySnapshot.docs.map((doc) => {
+       
+            return { 
+                id: doc.id,
+                ...doc.data(),
+            } as CategoryType;
         });
+
+        return data;
+
     } catch (e: any) {
         throw new Error(e.message)
     }
 }
 
-export async function createCategory(data: CategoriesType) {
+export async function createCategoryFirebase(data: CategoryType) {
     try {
-        const formattedTrainingDays = data.trainingDays.reduce((acc, day, index) => {
-            acc[`day_${index + 1}`] = day.value;
-            return acc;
-        }, {} as Record<string, string>);
-
-        const formattedTrainingSchedules = data.trainingSchedule.reduce((acc, schedule, index) => {
-            acc[`day_${index + 1}`] = schedule.hour;
-            return acc;
-        }, {} as Record<string, string>);
-
         const docRef = await addDoc(collection(db, dbName), {
-            name: data.name,
-            status: data.status,
-            training_days: formattedTrainingDays,
-            training_schedules: formattedTrainingSchedules,
-            createdAt: Date.now().toLocaleString("pt-BR"),
+            ...data,
+            createdAt: serverTimestamp(),
         });
 
-        console.log("Document written with ID: ", docRef.id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return { id: docRef.id, ...docSnap.data() } as CategoryType;
+        } else {
+            throw new Error("Document does not exist.");
+        }
     } catch (e: any) {
         throw new Error(e.message);
     }
 }
 
-export async function deleteCategory(id: string) {
+
+export async function deleteCategoryFirebase(id: string) {
     try {
         await deleteDoc(doc(db, dbName, id));
     } catch (e: any) {
@@ -50,13 +60,12 @@ export async function deleteCategory(id: string) {
     }
 }
 
-export async function getCategory(id: string) {
-    try{
+export async function getCategoryFirebase(id: string) {
+    try {
         const docRef = doc(db, dbName, id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
             return docSnap.data();
         } else {
             // doc.data() will be undefined in this case
@@ -67,23 +76,11 @@ export async function getCategory(id: string) {
     }
 }
 
-export async function editCategory(data: CategoriesType, id: string) {
+export async function editCategoryFirebase(data: CategoryType, id: string) {
     try {
-        const formattedTrainingDays = data.trainingDays.reduce((acc, day, index) => {
-            acc[`day_${index + 1}`] = day.value;
-            return acc;
-        }, {} as Record<string, string>);
-
-        const formattedTrainingSchedules = data.trainingSchedule.reduce((acc, schedule, index) => {
-            acc[`day_${index + 1}`] = schedule.hour;
-            return acc;
-        }, {} as Record<string, string>);
 
         await setDoc(doc(db, dbName, id), {
-            name: data.name,
-            status: data.status,
-            training_days: formattedTrainingDays,
-            training_schedules: formattedTrainingSchedules,
+            ...data,
             updatedAt: Date.now().toLocaleString("pt-BR")
         });
         console.log("Document written with ID: ", id);

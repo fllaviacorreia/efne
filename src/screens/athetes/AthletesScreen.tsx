@@ -1,20 +1,21 @@
 import * as React from 'react';
-import { View, Text, Button } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RoutesParamList } from '@/navigation/AppNavigaton';
-import { useNavigation } from '@react-navigation/native';
-
-type listAthletesScreenProp = NativeStackNavigationProp<RoutesParamList, "ListAthletes">;
+import { useAthletesContext } from '@/context/AthletesContext';
+import Loading from '../default/loading';
+import NoDataScreen from '../default/noData';
+import ListScreen from '../default/listScreen';
 
 export default function ListAthletesScreen() {
-    const navigation = useNavigation<listAthletesScreenProp>();
+  const { athletes } = useAthletesContext()
+
+  if (!athletes) {
+    return <Loading />
+  }
+
+  if (athletes.length == 0) {
+    return <NoDataScreen text='Nenhum atleta cadastrado.' nextRoute='NewAthlete'/>
+  }
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('DetailsAthlete')}
-      />
-    </View>
+   <ListScreen callCard='ATHLETE' data={athletes} nextRoute='NewAthlete' />
   );
 }

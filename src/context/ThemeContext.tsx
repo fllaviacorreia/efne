@@ -1,14 +1,12 @@
 import React from "react";
 import * as SecureStore from 'expo-secure-store';
-
-type ThemeContextType = {
-    theme: string;
-    toggleTheme: () => void;
-}
+import { ThemeContextType } from "@/types/theme";
+import { customDarkTheme, customLightTheme } from "@/constants/colors";
 
 const ThemeContext = React.createContext<ThemeContextType>({
     theme: 'light',
     toggleTheme: () => {},
+    getDefaultColors: () => customLightTheme,
 });
 
 function ThemeProvider({ children }: any) {
@@ -26,17 +24,22 @@ function ThemeProvider({ children }: any) {
         getTheme();
     }, []);
 
-    const toggleTheme = () => {
+    const toggleTheme = async () => {
         setTheme(theme === 'light' ? 'dark' : 'light');
-        SecureStore.setItemAsync('@efne-theme', theme);
+        await SecureStore.setItemAsync('@efne-theme', theme);
     };
 
+    const getDefaultColors = () => {
+        return theme === 'light' ?  customLightTheme : customDarkTheme;
+    }
+
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, getDefaultColors }}>
             {children}
         </ThemeContext.Provider>
     );
 }
+
 const useThemeContext = () => React.useContext(ThemeContext);
 
 export { ThemeProvider, useThemeContext };

@@ -1,4 +1,11 @@
-import { initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import {
+  initializeAuth,
+  //@ts-ignore
+  getReactNativePersistence
+} from "firebase/auth";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+
 import { 
   FIREBASE_API_KEY, 
   FIREBASE_AUTH_DOMAIN, 
@@ -6,13 +13,12 @@ import {
   FIREBASE_STORAGE_BUCKET, 
   FIREBASE_MESSAGING_SENDER_ID, 
   FIREBASE_APP_ID, 
-  FIREBASE_MEASUREMENT_ID, 
-  TEXT_TO_TEST } 
-from '@env'
+  FIREBASE_MEASUREMENT_ID 
+} from '@env';
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
-console.log(TEXT_TO_TEST)
-
-// Carregue as variáveis de ambiente do arquivo .env
+// Configuração do Firebase com variáveis de ambiente
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
   authDomain: FIREBASE_AUTH_DOMAIN,
@@ -22,7 +28,17 @@ const firebaseConfig = {
   appId: FIREBASE_APP_ID,
   measurementId: FIREBASE_MEASUREMENT_ID,
 };
-// Inicialize o Firebase
-const app = initializeApp(firebaseConfig);
 
-export { app };
+// Inicializa o app (se ainda não inicializado)
+// Inicializa o app apenas se ainda não foi inicializado
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+// Inicializa o Auth com persistência (importante para React Native)
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
+
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+export { app, auth, db, storage }; // 👈 agora sim exporta tudo que precisa
