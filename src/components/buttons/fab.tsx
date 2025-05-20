@@ -1,57 +1,67 @@
-import { RoutesParamList } from "@/navigation/AppNavigaton";
+
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Icon, IconElement, StyleService } from "@ui-kitten/components"
-import { Pressable } from "react-native";
+import { Pressable, PressableProps, StyleSheet } from "react-native";
+import { Icon } from "@ui-kitten/components";
+import { useThemeContext } from "@/context/ThemeContext";
+import { RoutesParamList } from "@/navigation/AppNavigaton";
 
-type Props = {
-    nextRoute: Exclude<keyof RoutesParamList, "DetailsAthlete" | "DetailsCategory" | "DetailsFrequency" | "DetailsFinancial">;
-    iconName: string;
-    iconFill: string;
-}
+type Props = PressableProps & {
+  iconName: string;
+  status?: "primary" | "danger" | "success" | "warning" | "basic";
+};
 
-type ListScreensProp = NativeStackNavigationProp<RoutesParamList>;
+type NavigationProp = NativeStackNavigationProp<RoutesParamList>;
 
-export default function FAB({ nextRoute, iconName, iconFill }: Props) {
-    const navigation = useNavigation<ListScreensProp>();
+export default function FAB({ iconName, status = "primary", ...rest}: Props) {
+  const navigation = useNavigation<NavigationProp>();
+  const { getDefaultColors } = useThemeContext();
+  const { colors } = getDefaultColors();
 
-    const IconSimpleUsageShowcase = (): IconElement => (
-        <Icon style={styles.icon} fill={iconFill} name={iconName} />
-    );
+  const backgroundMap: Record<string, string> = {
+    primary: colors.primary,
+    danger: colors.danger,
+    success: colors.success,
+    warning: colors.warning,
+    basic: colors.grayLight,
+  };
 
-    return (
-        <Pressable style={styles.buttonFAB} onPress={() => navigation.navigate(nextRoute)} 
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <IconSimpleUsageShowcase />
-        </Pressable>
-    )
-}
+  const fill = colors.textButton;
 
-const styles = StyleService.create({
-    buttonFAB: {
-        position: "absolute",
-        zIndex: 10,
-        bottom: 20,
-        right: 20,
-        width: 70,
-        height: 70,
-        borderRadius: 50,
-        color: "white",
-        backgroundColor: "#007AFF",
-        justifyContent: "center",
-        alignItems: "center",
-        shadowColor: "#000",
-        borderWidth: 0,
-        shadowOffset: {
-            width: 0,
-            height: 2,
+  return (
+    <Pressable {...rest}
+      style={[
+        styles.buttonFAB,
+        {
+          backgroundColor: backgroundMap[status],
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    icon: {
-        width: 32,
-        height: 32,
-    },
-})
+      ]}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    >
+      <Icon name={iconName} fill={fill} style={styles.icon} />
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  buttonFAB: {
+    position: "absolute",
+    zIndex: 10,
+    bottom: 20,
+    right: 20,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  icon: {
+    width: 32,
+    height: 32,
+  },
+});

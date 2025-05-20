@@ -1,15 +1,14 @@
-import { AthletesType, AthleteType } from "@/constants/types";
 import { createAthleteFirebase, deleteAthleteFirebase, editAthleteFirebase, getAllAthletesFirebase } from "@/firebase/athletes";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { AthletesTypeContext, AthleteType } from "@/types/athlete";
 
-const AthletesContex = createContext<AthletesType>({
+const AthletesContex = createContext<AthletesTypeContext>({
     athletes: [],
-
     createAthlete: async () => { },
     editAthlete: async () => { },
     deleteAthlete: async () => { },
+    getAthletesByCategory: async () => [],
 })
 
 function AthletesProvider({ children }: any) {
@@ -29,11 +28,11 @@ function AthletesProvider({ children }: any) {
     }
 
     const getAllAthletes = async () => {
-        try{
+        try {
             const athletesFirebase = await getAllAthletesFirebase();
-            
-            if(athletesFirebase) setAthletes(athletesFirebase);
-            
+
+            if (athletesFirebase) setAthletes(athletesFirebase);
+
         } catch (e: any) {
             throw new Error(e.message)
         }
@@ -42,7 +41,12 @@ function AthletesProvider({ children }: any) {
 
     const editAthlete = async (data: AthleteType, id: string) => {
         try {
-            await editAthleteFirebase(data, id);
+            console.log("data", data);
+            console.log("id", id);
+            if (!id) throw new Error("ID do atleta não encontrado.")
+            if (!data) throw new Error("Dados do atleta não encontrados.")
+            const result = await editAthleteFirebase(data, id);
+            console.log("result", result);
             const listAtualized = athletes.map((athlete) => {
                 if (athlete.id === id) return data;
                 return athlete;
@@ -63,15 +67,27 @@ function AthletesProvider({ children }: any) {
         }
     }
 
+    const getAthletesByCategory = async (id: string) => {
+        try {
+            if (!athletes || athletes.length === 0) return []
+
+            const list = athletes.filter((athlete) => athlete.category === id);
+            return list
+
+        } catch (e: any) {
+            throw new Error(e.message)
+        }
+    }
+
 
     useEffect(() => {
-        if(!loading && isAuthenticated) {
+        if (!loading && isAuthenticated) {
             getAllAthletes();
         }
     }, [getAllAthletes, loading, isAuthenticated])
 
     return (
-        <AthletesContex.Provider value={{ athletes, createAthlete, editAthlete, deleteAthlete }}>
+        <AthletesContex.Provider value={{ athletes, createAthlete, editAthlete, deleteAthlete, getAthletesByCategory }}>
             {children}
         </AthletesContex.Provider>
     )
@@ -79,4 +95,4 @@ function AthletesProvider({ children }: any) {
 
 const useAthletesContext = () => useContext(AthletesContex);
 
-export {AthletesProvider, useAthletesContext}   
+export { AthletesProvider, useAthletesContext }   

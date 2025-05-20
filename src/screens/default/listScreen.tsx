@@ -1,35 +1,51 @@
+import { Layout } from "@/components";
 import FAB from "@/components/buttons/fab";
 import AthleteCard from "@/components/cards/athleteCard";
 import CategoryCard from "@/components/cards/categoryCard";
-import { AthleteType, CategoryType, FrequenciesType } from "@/constants/types";
 import { RoutesParamList } from "@/navigation/AppNavigaton";
-import { Layout, List, StyleService } from "@ui-kitten/components";
+import { AthleteType } from "@/types/athlete";
+import { CategoryType } from "@/types/category";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { List, StyleService } from "@ui-kitten/components";
+import { FlatList } from "react-native";
 
 type AthleteProps = {
     callCard: "ATHLETE";
     data: AthleteType[];
     nextRoute: Exclude<keyof RoutesParamList, "DetailsAthlete" | "DetailsCategory" | "DetailsFrequency" | "DetailsFinancial">;
-  };
-  
-  type CategoryProps = {
+};
+
+type CategoryProps = {
     callCard: "CATEGORY";
     data: CategoryType[];
     nextRoute: Exclude<keyof RoutesParamList, "DetailsAthlete" | "DetailsCategory" | "DetailsFrequency" | "DetailsFinancial">;
-  };
-  
-  // Adicione outras variações aqui se quiser para Frequencies etc.
-  
-  type Props = AthleteProps | CategoryProps;
-  
+};
+
+type Props = AthleteProps | CategoryProps;
+
+type newNavigationProp = NativeStackNavigationProp<RoutesParamList>;
 
 export default function ListScreen({ callCard, data, nextRoute }: Props) {
+
+  const navigation = useNavigation<newNavigationProp>();
 
     const renderList = () => {
         switch (callCard) {
             case "ATHLETE":
-                return <List data={data} renderItem={({ item }) => (<AthleteCard data={item} />)} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', }} style={{ width: "100%", backgroundColor: "#fff" }} />;
+                return <FlatList
+                    data={data}
+                    keyExtractor={(item, index) => index.toLocaleString()}
+                    renderItem={({ item }) => (<AthleteCard data={item} />)} 
+                    contentContainerStyle={{ flexGrow: 1 }} 
+                    style={{ width: "100%", }} />;
             case "CATEGORY":
-                return <List data={data} renderItem={({ item }) => (<CategoryCard data={item} />)} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', }} style={{ width: "100%", backgroundColor: "#fff" }} />;
+                return <FlatList
+                data={data}
+                keyExtractor={(item, index) => index.toLocaleString()}
+                renderItem={({ item }) => (<CategoryCard data={item} />)} 
+                contentContainerStyle={{ flexGrow: 1}} 
+                style={{ width: "100%"}} />;
             default:
                 return <></>;
         }
@@ -38,7 +54,7 @@ export default function ListScreen({ callCard, data, nextRoute }: Props) {
     return (
         <Layout style={styles.container}>
             {renderList()}
-            <FAB iconFill="#fff" iconName="plus" nextRoute={nextRoute} />
+            <FAB iconName="plus" onPress={() => navigation.navigate(nextRoute === "NewAthlete" ? "NewAthlete" : "NewCategory")}/>
         </Layout>
     );
 }
@@ -51,7 +67,6 @@ const styles = StyleService.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'baseline',
-        backgroundColor: '#fff',
         paddingHorizontal: 10,
     },
     text: {

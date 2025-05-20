@@ -4,30 +4,33 @@ const styles = StyleService.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
         paddingTop: 48,
         alignItems: "center",
         justifyContent: "space-between",       
     },
     containerImg:{
         width: "100%",
-        height: "18%",
+        height: "30%",
         alignItems: "center",
         justifyContent: 'flex-start',
     },
     containerForm: {
+        flexDirection: 'column',
         width: "100%",
-        height: "40%",
-        justifyContent: "space-around",
+        height: 350,
+        justifyContent: "space-between",
+        alignItems: 'center'
     },
     containerInput: {
         marginBottom: 20,
+        width:"100%"
     },
     containerFooter: {
         width: "100%",
-        paddingTop: 10,
-        justifyContent: "space-around",
+        paddingVertical: 15,
         borderTopWidth: 1,
+        alignItems: 'center',
         borderColor: "#ccc",
     },
     containerCheckForgot: {
@@ -41,7 +44,7 @@ const styles = StyleService.create({
         marginBottom: 20,
     },  
     image: {
-        width: "60%",
+        width: "70%",
         height: "100%",
         resizeMode: "contain",
     },

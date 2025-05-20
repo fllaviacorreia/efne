@@ -15,6 +15,8 @@ import {
   FIREBASE_APP_ID, 
   FIREBASE_MEASUREMENT_ID 
 } from '@env';
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // Configuração do Firebase com variáveis de ambiente
 const firebaseConfig = {
@@ -36,4 +38,7 @@ const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
-export { app, auth };
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+export { app, auth, db, storage }; // 👈 agora sim exporta tudo que precisa

@@ -1,9 +1,8 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, serverTimestamp, setDoc } from "firebase/firestore";
-import { app } from "@/firebase/config";
-import { CategoryType } from "@/constants/types";
+import { db } from "@/firebase/config";
 import { getCurrentUser } from "./authentication";
+import { CategoryType } from "@/types/category";
 
-const db = getFirestore(app)
 
 const dbName = "Categories"
 

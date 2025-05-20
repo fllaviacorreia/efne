@@ -2,8 +2,12 @@ import { maxDate, minDate } from "@/constants/defaultValues";
 import * as yup from "yup";
 
 const saveAthleteSchema = yup.object().shape({
-  photo: yup.string().required('A foto é obrigatória'),
+  photo: yup.string().optional(),
   name: yup.string().required("O nome é obrigatório"),
+  gender: yup
+    .mixed<"feminino" | "masculino" | "outro">()
+    .oneOf(["feminino", "masculino", "outro"], "Sexo inválido")
+    .required("O sexo é obrigatório"),
   mother: yup.string().required("O nome do responsável é obrigatório"),
   father: yup.string().required("O nome do responsável é obrigatório"),
   born: yup

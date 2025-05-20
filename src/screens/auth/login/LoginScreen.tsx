@@ -5,20 +5,20 @@ import { useRef, useState } from "react";
 import { Formik } from "formik";
 import LoginSchema from "@/validators/loginSchema";
 import { useAuth } from "@/context/AuthContext";
-import { Button, CheckBox, Input, Layout, Text, useTheme } from "@ui-kitten/components";
+import { useTheme } from "@ui-kitten/components";
 import { Image } from "expo-image";
 import styles from "./styles";
 import { useAssets } from "expo-asset";
-import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, TextInput } from "react-native";
+import { Button, Checkbox, Input, Layout, Text } from "@/components";
 
 type loginParamsList = NativeStackNavigationProp<RoutesParamList, "Login">;
 
 export default function LoginScreen() {
   const { login } = useAuth();
-  const [assets, error] = useAssets([require('assets/icon.png')]);
+  const [assets, error] = useAssets([require('assets/splash_v2.png')]);
   const navigation = useNavigation<loginParamsList>();
-
-  const passwordRef = useRef<Input>(null);
+  const passwordRef = useRef<TextInput>(null);
 
   const theme = useTheme();
 
@@ -33,15 +33,11 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1, backgroundColor: theme['background-basic-color-1'] }}
+      style={{ flex: 1, backgroundColor: theme['background-basic-color-1'] }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
-        <Layout style={styles.container}>
+      <Layout style={styles.container}>
         <Layout style={styles.containerImg}>
           <Image
             source={assets ? assets[0] : null}
@@ -50,80 +46,78 @@ export default function LoginScreen() {
           />
         </Layout>
 
-        {/* Container para o formulário de login */}
-        <Layout style={styles.containerForm}>
-          <Formik
-            initialValues={{ username: 'freelas.jequie@gmail.com', password: 'freelas.jequie', keepConnected: false }}
-            validationSchema={LoginSchema}
-            onSubmit={(value) => onSubmitting(value)}
-          >
-            {
-              ({ handleChange, handleBlur, handleSubmit, values, setFieldValue, errors, touched, isSubmitting }) => (
-                <Layout>
-                  <Layout style={styles.containerInput}>
-                    <Input
-                      placeholder="Seu e-mail"
-                      returnKeyType="next"
-                      onSubmitEditing={() => passwordRef.current?.focus()}
-                      autoCapitalize="none"
-                      value={values.username}
-                      onChangeText={handleChange('username')}
-                      onBlur={handleBlur('username')}
-                      status={touched.username ? "danger" : "basic"}
-                    />
-                    {touched.username ? <Text status="danger">{errors.username}</Text> : null}
-                  </Layout>
+        <Formik
+          initialValues={{ username: '', password: '', keepConnected: false }}
+          validationSchema={LoginSchema}
+          onSubmit={(value) => onSubmitting(value)}
+        >
+          {
+            ({ handleChange, handleBlur, handleSubmit, values, setFieldValue, errors, touched, isSubmitting }) => (
 
-                  <Layout style={styles.containerInput}>
-                    <Input
-                      placeholder="Sua senha"
-                      secureTextEntry
-                      ref={passwordRef}
-                      autoCapitalize="none"
-                      returnKeyType="done"
-                      value={values.password}
-                      onChangeText={handleChange('password')}
-                      onBlur={handleBlur('password')}
-                      status={touched.password ? "danger" : "basic"}
-                    />
-                    {touched.password ? <Text status="danger">{errors.password}</Text> : null}
-                  </Layout>
-
-
-                  <Layout style={styles.containerCheckForgot}>
-                    <CheckBox
-                      checked={values.keepConnected}
-                      onChange={(value) => setFieldValue('keepConnected', value)}
-                    >
-                      Mantenha-me conectado
-                    </CheckBox>
-                    <Button appearance="ghost" status="basic" size="small" onPress={() => navigation.navigate("ForgotPassword")}>
-                      Esqueci minha senha
-                    </Button>
-                  </Layout>
-
-                  <Button style={styles.button} size="medium" onPress={handleSubmit as any} disabled={isSubmitting}>{isSubmitting ? "Entrando..." : "Entrar"}</Button>
+              <Layout style={styles.containerForm}>
+                <Layout style={styles.containerInput}>
+                  <Input
+                    placeholder="Seu e-mail"
+                    returnKeyType="next"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                    autoCapitalize="none"
+                    value={values.username}
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
+                    status={errors.username ? "danger" : touched.username ? "success" : "default"}
+                  />
+                  {errors.username ? <Text status="danger">{errors.username}</Text> : null}
                 </Layout>
 
-              )
-            }
-          </Formik>
-        </Layout>
+                <Layout style={styles.containerInput}>
+                  <Input
+                    placeholder="Sua senha"
+                    secureTextEntry
+                    ref={passwordRef}
+                    autoCapitalize="none"
+                    returnKeyType="done"
+                    value={values.password}
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    status={errors.username ? "danger" : touched.password ? "success" : "default"}
+                  />
+                  {errors.password ? <Text status="danger">{errors.password}</Text> : null}
+                </Layout>
+
+
+                <Layout style={styles.containerInput}>
+                  <Checkbox
+                    label="Mantenha-me conectado"
+                    status="default"
+                    checked={values.keepConnected}
+                    onChange={(value) => setFieldValue('keepConnected', value)}
+                  />
+                </Layout>
+
+
+                <Layout style={styles.containerInput}>
+                  <Button title="Esqueci minha senha" size="semi" status="warning" appearance="ghost" onPress={() => navigation.navigate("ForgotPassword")} />
+                </Layout>
+
+                <Button size="large" title={isSubmitting ? "Entrando..." : "Entrar"} status={isSubmitting ? "basic" : "primary"} onPress={handleSubmit as any} disabled={isSubmitting} />
+              </Layout>
+
+            )
+          }
+        </Formik>
+
 
         <Layout style={styles.containerFooter}>
-          <Button
-            appearance='outline'
+          {/* <Button
+          title="Cadastrar-me"
+          size="medium"
+            appearance='ghost'
             status="danger"
-            size="small"
-            style={styles.button}
             onPress={() => navigation.navigate("Register")}
-          >
-            Cadastrar-me
-          </Button>
+         /> */}
         </Layout>
 
-        </Layout>
-      </ScrollView>
+      </Layout>
     </KeyboardAvoidingView>
   );
 }

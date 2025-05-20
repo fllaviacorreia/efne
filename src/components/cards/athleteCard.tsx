@@ -1,40 +1,55 @@
-import { AthleteType } from "@/constants/types";
-import { Button, Layout, StyleService, Text } from "@ui-kitten/components";
+import { RoutesParamList } from "@/navigation/AppNavigaton";
+import ModalOpenPhoto from "@/components/modals/modalOpenPhoto";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
+import React from "react";
+import { Pressable, StyleSheet } from "react-native";
+import { AthleteType } from "@/types/athlete";
+import { Layout } from "../views";
+import { Text } from "../texts";
+import { Button } from "../buttons";
 
 type Props = {
     data: AthleteType,
 }
+
+type ListScreensProp = NativeStackNavigationProp<RoutesParamList>;
+
 export default function AthleteCard({ data }: Props) {
+    const navigation = useNavigation<ListScreensProp>();
+    const [visibleModal, setVisibleModal] = React.useState(false)
     const uriImage = data?.photo ? { uri: data.photo } : require("../../../assets/person_default.jpg")
     const age = calculateAge(data.born)
 
     return (
         <Layout style={styles.container}>
             <Layout style={styles.containerLeft}>
-                <Image style={styles.image} source={uriImage} />
+                <Pressable style={styles.image} onPress={() => { if (data.photo) setVisibleModal(true); }}>
+                    <Image style={styles.image} source={uriImage} />
+                </Pressable>
             </Layout>
             <Layout style={styles.containerRight}>
-                <Text category='h5' style={styles.text}>{data.name}</Text>
-                <Text style={styles.text}>Idade: {age}</Text>
-                <Layout style={styles.containerRow}>
-                    <Text style={styles.text}>{data.position}</Text>
-                    <Text style={styles.text}>{data.status}</Text>
-                </Layout>
-                <Button size="small" style={{  }}>Ver mais</Button>
+                <Text variant='h4' style={{width: '100%'}}>{data.name}</Text>
+                <Text style={{width: '100%'}}>Idade: {age} anos</Text>
+                <Text style={{width: '100%'}}>{data.position}</Text>
+                <Text style={{width: '100%'}}>{data.status}</Text>
+                <Button title="Ver mais" size="small" onPress={() => navigation.navigate('DetailsAthlete', { athlete: data, age: age })} />
             </Layout>
+            <ModalOpenPhoto setVisible={setVisibleModal} visible={visibleModal} uri={data.photo || ""} />
         </Layout>
     )
 }
 
-const styles = StyleService.create({
+const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
-        width: "99%", 
-        alignItems: "center", 
+        width: "95%",
+        height: 210,
+        marginLeft: 10,
+        alignItems: "center",
         paddingVertical: 10,
-        paddingHorizontal: 10,
-        height: 200,
+        paddingHorizontal: 20,
         shadowColor: "#000",
         borderWidth: 0,
         shadowOffset: {
@@ -43,9 +58,9 @@ const styles = StyleService.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        elevation: 5,
+        elevation: 8,
         marginVertical: 10,
-        borderRadius: 12,
+        borderRadius: 15,
     },
     containerLeft: {
         marginRight: 10,
@@ -55,21 +70,18 @@ const styles = StyleService.create({
     },
     containerRight: {
         marginLeft: 10,
-        flex: 1
+        height: '100%',
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'baseline',
+        justifyContent: 'space-between'
+
     },
-    containerRow: {
-        flexDirection: "row",
-        justifyContent: "space-between"
-    },
-    text: {
-        marginBottom: 10,
-        fontSize: 20,
-    },
-    image: { 
-        width: "100%", 
-        height: 160, 
+    image: {
+        width: "100%",
+        height: 160,
         borderRadius: 20
-    },    
+    },
 })
 
 

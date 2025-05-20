@@ -2,16 +2,17 @@ import { StyleService } from "@ui-kitten/components";
 
 const styles = StyleService.create({
     container: {
+        flex: 1,
         flexDirection: 'column',
         justifyContent: 'space-between',
-        paddingHorizontal: 22,
-        paddingTop: 48,    
+        alignItems: 'center',
+        paddingHorizontal: 15,    
         height: "100%" 
     },
-    
+
     containerImg:{
-        width: "100%",
-        marginBottom: 30,
+        marginVertical: 10,
+        height: 130,
         alignItems: "center",
         justifyContent: 'flex-start',
     },
@@ -21,8 +22,10 @@ const styles = StyleService.create({
         justifyContent: "space-around",
     },
     containerInput: {
-        marginVertical: 20,
         width: "100%",
+        marginVertical: 10,
+        height:80,
+        justifyContent: "space-between",
     },
     containerFooter: {
         width: "100%",
@@ -36,25 +39,31 @@ const styles = StyleService.create({
       justifyContent: "space-between",
       height: 50,  
       marginBottom: 10,
-    },
-    button: {
-        borderRadius: 20,
-        marginBottom: 20,
-    },  
+    }, 
     image: {
         width: 150,
-        height: 123,
+        height: 130,
         contentFit: "contain",
-        borderRadius: 25,
-        borderColor: 'black',
-        marginBottom: 15
     },
     row: {
         width: "100%",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: 20
+    },
+    rowMarginVertical: {
+        width: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginVertical: 2,
+        marginBottom:100,
+    },
+    column: {
+        flexDirection: "column",
+        alignItems: "baseline",
+        justifyContent: "space-between",
+        width: "50%",
     },
     divider: { 
         backgroundColor: 'black', 
@@ -73,6 +82,11 @@ const styles = StyleService.create({
         borderRadius: 50,
         color: "white",
     
+      },
+      text: {
+        fontSize: 20,
+        marginBottom: 15,
+        width: '100%'
       },
       icon: {
         width: 32,

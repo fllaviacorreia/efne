@@ -1,16 +1,14 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, increment, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { app } from "@/firebase/config";
-import { AthleteType } from "@/constants/types";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, ref as storageRef } from 'firebase/storage';
+import { app, storage, db } from "@/firebase/config";
 import { getCurrentUser } from "./authentication";
-
-const db = getFirestore(app)
+import { AthleteType } from "@/types/athlete";
 
 const dbName = "Athletes"
 
 export async function getAllAthletesFirebase() {
     const currentUser = getCurrentUser();
-    
+
     if (!currentUser) {
         throw new Error("Usuário não autenticado.");
     }
@@ -21,6 +19,7 @@ export async function getAllAthletesFirebase() {
 
         const data: AthleteType[] = querySnapshot.docs.map((doc) => {
             return {
+                id: doc.id,
                 ...doc.data(),
                 born: new Date(doc.data().born.seconds * 1000),
                 createdAt: new Date(doc.data().createdAt.seconds * 1000)
@@ -52,48 +51,42 @@ export async function getAthleteFirebase(id: string) {
 
 export async function createAthleteFirebase(data: AthleteType) {
     try {
-      let photoURL = "";
-  
-      if (data.photo) {
-        const filename = `athletes/${data.name}_${Date.now()}.jpg`;
-        photoURL = await uploadImageAsync(data.photo, filename);
-      }
-  
-      const dataToSave = {
-        ...data,
-        photo: photoURL,
-        born: new Date(data.born).getTime() / 1000,
-        createdAt: serverTimestamp(),
-      };
-  
-      const categoryRef = doc(db, "Categories", data.category);
-  
-      const result = await runTransaction(db, async (transaction) => {
-        const docRef = await addDoc(collection(db, dbName), {
-            ...dataToSave,
+        let photoURL = "";
+
+        if (data.photo) {
+            const filename = `athletes/${data.name}_${Date.now()}.jpg`;
+            photoURL = await uploadImageAsync(data.photo, filename);
+        }
+
+        const athleteRef = doc(collection(db, dbName)); // cria o doc com ID automático
+        const categoryRef = doc(db, "Categories", data.category);
+
+        const dataToSave = {
+            ...data,
+            photo: photoURL,
             born: new Date(data.born),
             createdAt: serverTimestamp(),
+        };
+
+        await runTransaction(db, async (transaction) => {
+            transaction.set(athleteRef, dataToSave);
+            transaction.update(categoryRef, {
+                totalAthletes: increment(1),
+            });
         });
 
-        const docSnap = await getDoc(docRef);
+        const docSnap = await getDoc(athleteRef);
 
-        if (docSnap.exists()) {
-        transaction.update(categoryRef, {
-            totalAthletes: increment(1),
-          });
-          
-            return { id: docRef.id, ...docSnap.data() } as AthleteType;
-        } else {
-            throw new Error("Document does not exist.");
+        if (!docSnap.exists()) {
+            throw new Error("Documento não foi criado.");
         }
-      });
 
-        return result;
+        return { id: athleteRef.id, ...docSnap.data() } as AthleteType;
     } catch (e: any) {
-      console.error("Erro ao cadastrar atleta:", e);
-      throw new Error(e.message || "Erro ao cadastrar atleta.");
+        console.error("Erro ao cadastrar atleta:", e);
+        throw new Error(e.message || "Erro ao cadastrar atleta.");
     }
-  }
+}
 
 export async function uploadImageAsync(uri: string, path: string): Promise<string> {
     const uid = getCurrentUser()?.uid;
@@ -127,14 +120,77 @@ export async function uploadImageAsync(uri: string, path: string): Promise<strin
 }
 
 export async function editAthleteFirebase(data: AthleteType, id: string) {
+
+    console.log("ID do atleta:", id);
+    console.log("Dados do atleta:", data);
     try {
-        await setDoc(doc(db, dbName, id), {
-            ...data,
-            updatedAt: serverTimestamp(),
+        console.log("ID do atleta:", id);
+        console.log("Dados do atleta:", data);
+        const athleteRef = doc(db, dbName, id);
+        const oldDoc = await getDoc(athleteRef);
+
+        if (!oldDoc.exists()) {
+            throw new Error("Atleta não encontrado.");
+        }
+
+        const oldData = oldDoc.data() as AthleteType;
+
+        // Verifica se a foto foi alterada (assumindo que data.photo pode ser base64 ou uri nova)
+        let photoURL = oldData.photo || "";
+
+        const isPhotoChanged = data.photo && data.photo !== oldData.photo;
+        if (isPhotoChanged) {
+            if (data.photo) {
+                const filename = `athletes/${data.name}_${Date.now()}.jpg`;
+                photoURL = await uploadImageAsync(data.photo, filename);
+            }
+
+            if (oldData.photo) {
+                const path = getStoragePathFromUrl(oldData.photo);
+                if (path) {
+                    const imageRef = storageRef(storage, path);
+                    await deleteObject(imageRef).catch((err) => {
+                        console.warn("Erro ao remover imagem antiga:", err.message);
+                    });
+                }
+            }
+        }
+
+        const newCategoryRef = doc(db, "Categories", data.category);
+        const oldCategoryRef = doc(db, "Categories", oldData.category);
+
+        await runTransaction(db, async (transaction) => {
+            transaction.update(athleteRef, {
+                ...data,
+                photo: photoURL,
+                updatedAt: serverTimestamp(),
+            });
+
+            if (oldData.category !== data.category) {
+                // decrementa da antiga
+                transaction.update(oldCategoryRef, {
+                    totalAthletes: increment(-1),
+                });
+
+                // incrementa na nova
+                transaction.update(newCategoryRef, {
+                    totalAthletes: increment(1),
+                });
+            }
         });
 
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error("Erro ao editar atleta:", e);
+        throw new Error(e.message || "Erro ao editar atleta.");
+    }
+}
+
+function getStoragePathFromUrl(url: string): string | null {
+    try {
+        const matches = decodeURIComponent(url).match(/\/o\/(.*?)\?alt/);
+        return matches && matches[1] ? matches[1] : null;
+    } catch {
+        return null;
     }
 }
 
