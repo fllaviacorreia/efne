@@ -32,6 +32,7 @@ const Select = forwardRef<View, Props>(({ options, value, onSelect, disabled, pl
 
     const [visible, setVisible] = React.useState(false);
 
+    
     const selectedLabel = options.find((opt) => opt.value === value)?.label || placeholder;
 
     const backgroundColor = colors.inputBackground;
