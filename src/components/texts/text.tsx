@@ -6,6 +6,8 @@ import {
 } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 
+
+
 type Variant =
   | "h1"
   | "h2"
